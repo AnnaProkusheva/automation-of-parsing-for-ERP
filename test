@@ -1,0 +1,9 @@
+from duckduckgo_search import DDGS
+
+print("Тестовый поиск...")
+try:
+    ddgs = DDGS()
+    results = list(ddgs.text("насос технические характеристики", max_results=1))
+    print("Успех! Найден результат:", results)
+except Exception as e:
+    print("Ошибка:", e)
