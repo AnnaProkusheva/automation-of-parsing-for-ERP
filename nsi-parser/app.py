@@ -2,7 +2,7 @@ import os
 import tempfile
 from flask import Flask, render_template, request, jsonify, send_file, after_this_request
 
-from parser import PumpParser
+from parser import PumpParser, ElcomParser
 from exporter import DataExporter
 
 app = Flask(__name__)
@@ -24,21 +24,43 @@ def index():
 def search_pumps():
     data = request.get_json()
     model_query = data.get('model', '').strip()
-    max_pages = data.get('pages', 5)
+    max_pages = data.get('pages', 30)
+    fetch_details = data.get('fetch_details', False)  # Опционально: парсить детальные страницы
 
     if not model_query:
-        return jsonify({'error': 'Модель насоса не указана'}), 400
+        return jsonify({'error': 'Модель не указана'}), 400
 
     try:
+        print(f"\n{'=' * 60}")
+        print(f"🔍 Поиск: '{model_query}'")
+        print(f"{'=' * 60}")
+
+        # Источник 1: nasoscentr.ru
+        print("\n📍 Источник 1: nasoscentr.ru")
         results = parser_instance.search(model_query, max_pages=max_pages)
+
+        if results:
+            print(f"✅ Найдено: {len(results)}")
+        else:
+            # Источник 2: prm.elcomspb.ru
+            print("\n📍 Источник 2: prm.elcomspb.ru")
+            print(f"   fetch_details={fetch_details} (парсинг детальных страниц: {'вкл' if fetch_details else 'выкл'})")
+            elcom_parser = ElcomParser(delay=1.5)
+            results = elcom_parser.search(model_query, max_pages=max_pages, fetch_details=fetch_details)
+
+        print(f"\n📊 Итого: {len(results)} результатов")
+        print(f"{'=' * 60}\n")
+
         return jsonify({
             'success': True,
             'count': len(results),
             'data': results
         })
     except Exception as e:
+        print(f"❌ Ошибка: {e}")
+        import traceback
+        traceback.print_exc()
         return jsonify({'error': str(e)}), 500
-
 
 @app.route('/api/export', methods=['POST'])
 def export_data():
