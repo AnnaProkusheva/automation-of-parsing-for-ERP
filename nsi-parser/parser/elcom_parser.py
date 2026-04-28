@@ -252,7 +252,7 @@ class ElcomParser:
         all_items = []
         seen_articles: Set[str] = set()
 
-        print(f"🔍 Поиск '{model_query}' на prm.elcomspb.ru...")
+        print(f" Поиск '{model_query}' на prm.elcomspb.ru...")
 
         try:
             for page in range(1, max_pages + 1):
@@ -267,7 +267,7 @@ class ElcomParser:
 
                 if not items:
                     if page == 1:
-                        print(f"  ⚠️  Не найдено товаров")
+                        print(f"    Не найдено товаров")
                     break
 
                 print(f"  Страница {page}: {len(items)} товаров")
@@ -282,7 +282,7 @@ class ElcomParser:
 
                         # Если нужно — получаем характеристики с детальной страницы
                         if fetch_details:
-                            print(f"    🔗 Поиск страницы для {item['article']}...")
+                            print(f"    Поиск страницы для {item['article']}...")
                             detail_url = self._search_product_url(item['article'])
                             if detail_url:
                                 item['url'] = detail_url
@@ -306,7 +306,7 @@ class ElcomParser:
                 time.sleep(self.delay)
 
         except Exception as e:
-            print(f"  ⚠️  Ошибка: {e}")
+            print(f"   Ошибка: {e}")
 
-        print(f"✅ Найдено: {len(all_items)} насосов")
+        print(f" Найдено: {len(all_items)} насосов")
         return all_items
