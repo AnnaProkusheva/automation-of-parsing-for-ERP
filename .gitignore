@@ -1,0 +1,11 @@
+nsi-parser/.env
+*.env
+
+# Python
+__pycache__/
+venv/
+.venv/
+*.pyc
+
+# IDE
+.idea/
