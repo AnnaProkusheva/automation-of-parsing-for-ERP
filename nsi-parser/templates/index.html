@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Поиск по каталогу</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css" rel="stylesheet">
+    <link href="{{ url_for('static', filename='css/style.css') }}" rel="stylesheet">
+</head>
+<body>
+    <nav class="navbar navbar-expand-lg navbar-dark bg-primary shadow-sm">
+        <div class="container">
+            <a class="navbar-brand" href="#">
+                <i class="bi bi-database-search me-2"></i>
+                Поиск по каталогу
+            </a>
+            <span class="navbar-text text-white-50">nasoscentr.ru</span>
+        </div>
+    </nav>
+
+    <main class="container py-4">
+        <div class="row justify-content-center">
+            <div class="col-lg-10">
+                <div class="card shadow-sm mb-4">
+                    <div class="card-header bg-white py-3">
+                        <h5 class="mb-0">Поиск</h5>
+                    </div>
+                    <div class="card-body">
+                        <form id="searchForm" class="row g-3">
+                            <div class="col-md-8">
+                                <label for="modelInput" class="form-label">Модель</label>
+                                <input type="text" class="form-control form-control-lg" id="modelInput"
+                                       placeholder="Например: Д 160, 1Д 200-90, 2Д" required>
+                                <div class="form-text">Поддерживаются регулярные выражения</div>
+                            </div>
+                            <div class="col-md-4">
+                                <label for="pagesInput" class="form-label">Страниц для поиска</label>
+                                <input type="number" class="form-control form-control-lg" id="pagesInput"
+                                       value="5" min="1" max="20">
+                            </div>
+                            <div class="col-12">
+                                <button type="submit" class="btn btn-primary btn-lg w-100" id="searchBtn">
+                                    <i class="bi bi-search me-2"></i>
+                                    Поиск
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+
+                <div id="loading" class="alert alert-info d-none" role="alert">
+                    <div class="d-flex align-items-center">
+                        <div class="spinner-border spinner-border-sm me-2" role="status"></div>
+                        <span id="loadingText">Выполняется поиск...</span>
+                    </div>
+                </div>
+
+                <div id="errorAlert" class="alert alert-danger d-none" role="alert"></div>
+
+                <div id="resultsSection" class="d-none">
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                        <h5>Результаты: <span id="resultsCount" class="text-primary">0</span></h5>
+                        <div class="btn-group" role="group">
+                            <button type="button" class="btn btn-success" id="exportExcel">
+                                <i class="bi bi-file-earmark-excel me-1"></i>Excel
+                            </button>
+                            <button type="button" class="btn btn-outline-secondary" id="exportJson">
+                                <i class="bi bi-file-earmark-code me-1"></i>JSON
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="table-responsive">
+                        <table class="table table-hover table-striped align-middle" id="resultsTable">
+                            <thead class="table-light">
+                                <tr>
+                                    <th>Модель</th>
+                                    <th>Подача, м³/ч</th>
+                                    <th>Напор, м</th>
+                                    <th>Мощность, кВт</th>
+                                    <th>Об/мин</th>
+                                    <th>Ссылка</th>
+                                </tr>
+                            </thead>
+                            <tbody id="resultsBody"></tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <div id="emptyState" class="text-center py-5 text-muted d-none">
+                    <i class="bi bi-inbox fs-1 d-block mb-3"></i>
+                    <p class="mb-0">Введите модель и нажмите "Поиск"</p>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <footer class="border-top py-3 mt-5">
+        <div class="container text-center text-muted small">
+            Инструмент поиска по каталогу &copy; 2026. Данные с nasoscentr.ru
+        </div>
+    </footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="{{ url_for('static', filename='js/app.js') }}"></script>
+</body>
+</html>
