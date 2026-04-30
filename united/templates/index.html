@@ -1,0 +1,609 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Инженерный портал</title>
+    <style>
+        :root {
+            --bg: #0f172a;
+            --card: #1e293b;
+            --acc: #3b82f6;
+            --acc-hover: #2563eb;
+            --txt: #e2e8f0;
+            --txt-muted: #94a3b8;
+            --border: #334155;
+            --success: #10b981;
+            --warning: #f59e0b;
+            --error: #ef4444;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: system-ui, -apple-system, sans-serif;
+            background: var(--bg);
+            color: var(--txt);
+            line-height: 1.5;
+            padding: 20px;
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 24px;
+        }
+
+        header h1 {
+            font-size: 24px;
+            font-weight: 600;
+            letter-spacing: 0.5px;
+        }
+
+        header p {
+            color: var(--txt-muted);
+            font-size: 14px;
+            margin-top: 4px;
+        }
+
+        .tabs {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 20px;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .tab {
+            padding: 10px 16px;
+            cursor: pointer;
+            border-radius: 8px 8px 0 0;
+            background: var(--card);
+            opacity: 0.6;
+            transition: 0.2s;
+            font-weight: 500;
+        }
+
+        .tab:hover {
+            opacity: 0.8;
+        }
+
+        .tab.active {
+            opacity: 1;
+            border-bottom: 2px solid var(--acc);
+            color: var(--acc);
+        }
+
+        .panel {
+            display: none;
+            background: var(--card);
+            padding: 20px;
+            border-radius: 12px;
+            box-shadow: 0 4px 6px -1px #0005;
+        }
+
+        .panel.active {
+            display: block;
+            animation: fadeIn 0.3s ease;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(5px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 12px;
+            margin-bottom: 16px;
+        }
+
+        .input-group {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+
+        label {
+            font-size: 13px;
+            color: var(--txt-muted);
+        }
+
+        input, textarea, select, button {
+            background: #0b1120;
+            color: var(--txt);
+            border: 1px solid var(--border);
+            padding: 10px;
+            border-radius: 8px;
+            font-size: 14px;
+            outline: none;
+            transition: 0.2s;
+        }
+
+        input:focus, textarea:focus, select:focus {
+            border-color: var(--acc);
+        }
+
+        button {
+            background: var(--acc);
+            cursor: pointer;
+            border: none;
+            font-weight: 500;
+        }
+
+        button:hover {
+            background: var(--acc-hover);
+        }
+
+        button:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        button.secondary {
+            background: var(--card);
+            border: 1px solid var(--border);
+        }
+
+        button.secondary:hover {
+            background: #253041;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 16px;
+            font-size: 13px;
+        }
+
+        th, td {
+            border: 1px solid var(--border);
+            padding: 8px;
+            text-align: left;
+        }
+
+        th {
+            background: #151d2e;
+            position: sticky;
+            top: 0;
+            font-weight: 600;
+        }
+
+        tr:hover td {
+            background: #151d2e;
+        }
+
+        .log {
+            background: #0b1120;
+            padding: 12px;
+            border-radius: 8px;
+            margin-top: 16px;
+            font-family: 'Courier New', monospace;
+            font-size: 12px;
+            max-height: 180px;
+            overflow-y: auto;
+            white-space: pre-wrap;
+            border: 1px solid var(--border);
+        }
+
+        .log span.ok {
+            color: var(--success);
+        }
+
+        .log span.err {
+            color: var(--error);
+        }
+
+        .log span.info {
+            color: var(--acc);
+        }
+
+        .step {
+            background: #151d2e;
+            padding: 12px;
+            border-radius: 8px;
+            margin-bottom: 12px;
+            border-left: 3px solid var(--acc);
+        }
+
+        .step h4 {
+            margin-bottom: 8px;
+            font-size: 14px;
+            color: var(--txt-muted);
+        }
+
+        .file-input-wrapper {
+            position: relative;
+            overflow: hidden;
+            display: inline-block;
+        }
+
+        .file-input-wrapper input[type=file] {
+            position: absolute;
+            left: 0;
+            top: 0;
+            opacity: 0;
+            width: 100%;
+            height: 100%;
+            cursor: pointer;
+        }
+
+        .file-label {
+            display: inline-block;
+            padding: 8px 12px;
+            background: #253041;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 13px;
+        }
+
+        .file-name {
+            margin-left: 8px;
+            color: var(--txt-muted);
+            font-size: 13px;
+        }
+
+        #tkResult {
+            margin-top: 16px;
+            padding: 12px;
+            background: #0b1120;
+            border-radius: 8px;
+            display: none;
+        }
+
+        #tkResult pre {
+            white-space: pre-wrap;
+            font-family: inherit;
+        }
+    </style>
+</head>
+<body>
+<header>
+    <h1>🛠 Инженерный портал</h1>
+    <p>Парсинг насосов • Генерация ТК</p>
+</header>
+
+<div class="tabs">
+    <div class="tab active" data-target="pumps">🔍 Насосы</div>
+    <div class="tab" data-target="tk">🤖 ТК (ИИ)</div>
+    <div class="tab" data-target="settings">⚙️ Настройки</div>
+</div>
+
+<!-- 🔍 НАСОСЫ -->
+<div id="pumps" class="panel active">
+    <div class="grid">
+        <div class="input-group">
+            <label>Модель насоса</label>
+            <input id="pumpModel" placeholder="Например: 1К80-50-200">
+        </div>
+        <div class="input-group">
+            <label>Страниц поиска</label>
+            <input id="pumpPages" type="number" value="5" min="1" max="20">
+        </div>
+    </div>
+    <div style="display: flex; gap: 10px;">
+        <button onclick="searchPumps()">🔎 Искать</button>
+        <button class="secondary" onclick="exportPumps('excel')" id="btnExportPump">📥 Excel</button>
+        <button class="secondary" onclick="exportPumps('json')">📥 JSON</button>
+    </div>
+    <div id="pumpLog" class="log">Готов к работе...</div>
+    <div style="overflow-x: auto; max-height: 400px;">
+        <table id="pumpTable">
+            <thead>
+            <tr>
+                <th>Модель</th>
+                <th>Подача</th>
+                <th>Напор</th>
+                <th>Мощность</th>
+                <th>Об/мин</th>
+                <th>Ссылка</th>
+            </tr>
+            </thead>
+            <tbody></tbody>
+        </table>
+    </div>
+</div>
+
+<!-- 🤖 ТК (ИИ) -->
+<div id="tk" class="panel">
+    <div class="grid">
+        <div class="input-group"><label>Модель оборудования</label><input id="tkModel"></div>
+        <div class="input-group"><label>Класс</label><input id="tkClass"></div>
+        <div class="input-group"><label>Подкласс</label><input id="tkSub"></div>
+    </div>
+    <div class="input-group" style="margin-bottom: 12px;">
+        <label>Дополнительный запрос / Инструкция</label>
+        <textarea id="tkPrompt" rows="3" placeholder="Укажите особенности, стандарты или требования..."></textarea>
+    </div>
+
+    <!-- ✅ ВЫБОР МОДЕЛИ ИИ -->
+    <div class="input-group" style="margin-bottom: 12px;">
+        <label>Модель ИИ</label>
+        <select id="aiModel">
+            <optgroup label="✅ Проверенные модели">
+                <option value="openai/gpt-4o-2024-08-06" selected>GPT-4o (OpenAI)</option>
+                <option value="openai/gpt-4o-mini">GPT-4o Mini</option>
+                <option value="meta-llama/llama-3.3-70b-instruct">Llama 3.3 70B</option>
+                <option value="mistralai/mistral-large-2411">Mistral Large 2</option>
+            </optgroup>
+            <optgroup label="🆓 Бесплатные модели">
+                <option value="openrouter/free">OpenRouter Free (автовыбор)</option>
+                <option value="z-ai/glm-4.5-air:free">GLM-4.5 Air (Free)</option>
+                <option value="inclusionai/ling-2.6-1t:free">Ling-2.6-1T (Free)</option>
+                <option value="openai/gpt-oss-120b:free">GPT-OSS 120B (Free)</option>
+            </optgroup>
+        </select>
+    </div>
+
+    <!-- 📎 ЗАГРУЗКА ФАЙЛА -->
+    <div class="input-group" style="margin-bottom: 12px;">
+        <label>Технический паспорт (PDF/DOCX/TXT)</label>
+        <div style="display: flex; align-items: center; gap: 10px;">
+            <div class="file-input-wrapper">
+                <span class="file-label">📎 Выбрать файл</span>
+                <input type="file" id="tkFile" accept=".pdf,.docx,.txt,.csv" onchange="showFileName()">
+            </div>
+            <span id="fileName" class="file-name">Файл не выбран</span>
+        </div>
+    </div>
+
+    <button onclick="generateTK()" style="margin-top: 12px;">🤖 Сгенерировать ТК</button>
+
+    <div id="tkLog" class="log">Ожидание запроса...</div>
+
+    <div id="tkResult">
+        <div id="tkText"
+             style="margin-bottom: 12px; padding-bottom: 12px; border-bottom: 1px solid var(--border);"></div>
+        <div id="tkTablePreview"></div>
+        <button onclick="downloadTK()" style="margin-top: 12px; background: var(--success);">📥 Скачать XLSX</button>
+    </div>
+</div>
+
+<!-- ⚙️ НАСТРОЙКИ -->
+<div id="settings" class="panel">
+    <div class="grid">
+        <div class="input-group"><label>Провайдер ИИ</label>
+            <select id="setProv" onchange="updateModelDropdown()">
+                <option value="openrouter">OpenRouter</option>
+                <option value="openai">OpenAI</option>
+                <option value="yandex">YandexGPT</option>
+                <option value="gigachat">GigaChat</option>
+            </select>
+        </div>
+        <div class="input-group"><label>API Ключ</label><input id="setKey" type="password" placeholder="sk-..."></div>
+        <div class="input-group"><label>Модель</label>
+            <select id="setModel">
+                <!-- Заполняется динамически -->
+            </select>
+        </div>
+        <div class="input-group"><label>Max Tokens</label><input id="setTok" type="number" value="3000"></div>
+    </div>
+    <button onclick="saveSettings()">💾 Сохранить настройки</button>
+    <div id="setLog" class="log">Загрузка настроек...</div>
+</div>
+
+<script>
+    const $ = id => document.getElementById(id);
+    let currentData = [], tkXlsxBase64 = null, tkFilename = 'tk.xlsx', selectedFile = null;
+
+    // === МОДЕЛИ ИИ ===
+    const AI_MODELS = {
+        openrouter: [
+            {value: "openai/gpt-4o-2024-08-06", label: "GPT-4o (OpenAI)"},
+            {value: "openai/gpt-4o-mini", label: "GPT-4o Mini"},
+            {value: "meta-llama/llama-3.3-70b-instruct", label: "Llama 3.3 70B"},
+            {value: "mistralai/mistral-large-2411", label: "Mistral Large 2"},
+            {value: "openrouter/free", label: "OpenRouter Free (автовыбор)"},
+            {value: "z-ai/glm-4.5-air:free", label: "GLM-4.5 Air (Free)"},
+            {value: "inclusionai/ling-2.6-1t:free", label: "Ling-2.6-1T (Free)"},
+            {value: "openai/gpt-oss-120b:free", label: "GPT-OSS 120B (Free)"}
+        ],
+        openai: [
+            {value: "gpt-4o", label: "GPT-4o"},
+            {value: "gpt-4o-mini", label: "GPT-4o Mini"}
+        ],
+        yandex: [
+            {value: "yandexgpt/latest", label: "YandexGPT Latest"}
+        ],
+        gigachat: [
+            {value: "GigaChat-Pro", label: "GigaChat Pro"}
+        ]
+    };
+
+    // Обновление списка моделей
+    function updateModelDropdown() {
+        const provider = $('setProv').value;
+        const modelSelect = $('setModel');
+        const models = AI_MODELS[provider] || AI_MODELS.openrouter;
+        const currentVal = modelSelect.value;
+
+        modelSelect.innerHTML = '';
+        models.forEach(m => {
+            const opt = document.createElement('option');
+            opt.value = m.value;
+            opt.textContent = m.label;
+            modelSelect.appendChild(opt);
+        });
+
+        const exists = models.some(m => m.value === currentVal);
+        if (exists) modelSelect.value = currentVal;
+    }
+
+    // Показать имя выбранного файла
+    function showFileName() {
+        const fileInput = $('tkFile');
+        const fileName = $('fileName');
+        if (fileInput.files && fileInput.files[0]) {
+            selectedFile = fileInput.files[0];
+            fileName.textContent = selectedFile.name;
+            fileName.style.color = 'var(--success)';
+        } else {
+            selectedFile = null;
+            fileName.textContent = 'Файл не выбран';
+            fileName.style.color = 'var(--txt-muted)';
+        }
+    }
+
+    // Переключение вкладок
+    document.querySelectorAll('.tab').forEach(tab => {
+        tab.addEventListener('click', () => {
+            document.querySelectorAll('.tab, .panel').forEach(el => el.classList.remove('active'));
+            tab.classList.add('active');
+            $(tab.dataset.target).classList.add('active');
+        });
+    });
+
+    // Логирование
+    const log = (msg, elId, type = 'info') => {
+        const el = $(elId);
+        const span = document.createElement('span');
+        span.className = type;
+        span.textContent = msg + '\n';
+        el.appendChild(span);
+        el.scrollTop = el.scrollHeight;
+    };
+
+    // Обёртка fetch
+    const api = async (url, data, isForm = false) => {
+        const opts = {method: 'POST', headers: isForm ? {} : {'Content-Type': 'application/json'}};
+        opts.body = isForm ? data : JSON.stringify(data);
+        const res = await fetch(url, opts);
+        if (!res.ok) throw new Error(await res.text());
+        return res.json();
+    };
+
+    // 🔍 НАСОСЫ
+    async function searchPumps() {
+        const model = $('pumpModel').value.trim();
+        if (!model) return log(' Введите модель насоса', 'pumpLog', 'err');
+        log(`🔍 Поиск: "${model}"...`, 'pumpLog', 'info');
+        try {
+            const res = await api('/api/pumps/search', {model, pages: +$('pumpPages').value || 5});
+            log(`✅ Найдено: ${res.count} шт.`, 'pumpLog', 'ok');
+            currentData = res.data;
+            const tbody = $('pumpTable').querySelector('tbody');
+            tbody.innerHTML = res.data.map(p => `
+                    <tr>
+                        <td>${p.model || '-'}</td><td>${p.flow_rate || '-'}</td>
+                        <td>${p.head || '-'}</td><td>${p.motor_power || '-'}</td>
+                        <td>${p.rotation_speed || '-'}</td>
+                        <td><a href="${p.url || '#'}" target="_blank" style="color:var(--acc)">🔗</a></td>
+                    </tr>`).join('');
+        } catch (e) {
+            log(`❌ ${e.message}`, 'pumpLog', 'err');
+        }
+    }
+
+    async function exportPumps(fmt) {
+        if (!currentData.length) return log('❌ Нет данных для экспорта', 'pumpLog', 'err');
+        log(`📥 Экспорт в ${fmt.toUpperCase()}...`, 'pumpLog', 'info');
+        try {
+            const blob = await fetch('/api/pumps/export', {
+                method: 'POST', headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify({format: fmt, data: currentData})
+            }).then(r => r.blob());
+            const a = document.createElement('a');
+            a.href = URL.createObjectURL(blob);
+            a.download = `pumps_export.${fmt === 'excel' ? 'xlsx' : 'json'}`;
+            a.click();
+            log('✅ Скачивание начато', 'pumpLog', 'ok');
+        } catch (e) {
+            log(`❌ ${e.message}`, 'pumpLog', 'err');
+        }
+    }
+
+    // 🤖 ТК (ИИ) — С ЗАГРУЗКОЙ ФАЙЛА
+    async function generateTK() {
+        log('⏳ Генерация ТК...', 'tkLog', 'info');
+        $('tkResult').style.display = 'none';
+
+        const fd = new FormData();
+        fd.append('message', $('tkPrompt').value || 'Сгенерируй технологическую карту');
+        fd.append('model_name', $('tkModel').value);
+        fd.append('equipment_class', $('tkClass').value);
+        fd.append('subclass', $('tkSub').value);
+        fd.append('model', $('aiModel').value);
+
+        // Добавляем файл если выбран
+        if (selectedFile) {
+            fd.append('file', selectedFile);
+            log(`📎 Прикреплён файл: ${selectedFile.name}`, 'tkLog', 'info');
+        }
+
+        try {
+            const res = await fetch('/api/ai/chat', {method: 'POST', body: fd});
+            if (!res.ok) throw new Error(await res.text());
+            const data = await res.json();
+            log(`✅ Готово. Строк: ${data.table_rows?.length || 0}`, 'tkLog', 'ok');
+
+            $('tkText').innerHTML = `<strong>Ответ ИИ:</strong><br>${data.text.replace(/\n/g, '<br>')}`;
+            if (data.table_rows?.length) {
+                let html = '<table><thead><tr><th>Элемент</th><th>Подэлемент</th><th>Операция</th><th>Содержание</th><th>Вид ТО</th><th>Период</th></tr></thead><tbody>';
+                data.table_rows.forEach(r => html += `<tr><td>${r[0]}</td><td>${r[1]}</td><td>${r[2]}</td><td>${r[3]}</td><td>${r[4]}</td><td>${r[5]}</td></tr>`);
+                $('tkTablePreview').innerHTML = html + '</tbody></table>';
+            }
+            tkXlsxBase64 = data.xlsx_file;
+            tkFilename = data.xlsx_filename || 'tk.xlsx';
+            $('tkResult').style.display = 'block';
+        } catch (e) {
+            log(`❌ ${e.message}`, 'tkLog', 'err');
+        }
+    }
+
+    function downloadTK() {
+        if (!tkXlsxBase64) return;
+        const b = Uint8Array.from(atob(tkXlsxBase64), c => c.charCodeAt(0));
+        const a = document.createElement('a');
+        a.href = URL.createObjectURL(new Blob([b], {type: 'application/octet-stream'}));
+        a.download = tkFilename;
+        a.click();
+    }
+
+    // ⚙️ НАСТРОЙКИ
+    async function loadSettings() {
+        try {
+            const s = await (await fetch('/api/ai/settings')).json();
+            const ai = s.ai || s;
+            $('setProv').value = ai.provider || 'openrouter';
+            $('setKey').value = ai.api_key || '';
+            $('setModel').value = ai.model || 'openai/gpt-4o-2024-08-06';
+            $('setTok').value = ai.max_tokens || 3000;
+            updateModelDropdown();
+            log('✅ Настройки загружены', 'setLog', 'ok');
+        } catch (e) {
+            log(`❌ ${e.message}`, 'setLog', 'err');
+        }
+    }
+
+    async function saveSettings() {
+        log('⏳ Сохранение...', 'setLog', 'info');
+        try {
+            await api('/api/ai/settings', {
+                provider: $('setProv').value,
+                api_key: $('setKey').value,
+                model: $('setModel').value,
+                max_tokens: +$('setTok').value
+            });
+            log('✅ Сохранено', 'setLog', 'ok');
+        } catch (e) {
+            log(`❌ ${e.message}`, 'setLog', 'err');
+        }
+    }
+
+    // Инициализация
+    document.addEventListener('DOMContentLoaded', () => {
+        updateModelDropdown();
+        loadSettings();
+    });
+</script>
+</body>
+</html>
